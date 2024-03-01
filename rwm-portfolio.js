@@ -1,676 +1,3 @@
-<!doctype html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
-    <title></title>
-    <style>
-      @font-face {
-        font-weight: 400;
-        font-style: normal;
-        font-family: circular;
-
-        src: url("chrome-extension://liecbddmkiiihnedobmlmillhodjkdmb/fonts/CircularXXWeb-Book.woff2")
-          format("woff2");
-      }
-
-      @font-face {
-        font-weight: 700;
-        font-style: normal;
-        font-family: circular;
-
-        src: url("chrome-extension://liecbddmkiiihnedobmlmillhodjkdmb/fonts/CircularXXWeb-Bold.woff2")
-          format("woff2");
-      }
-
-      *,
-      ::before,
-      ::after {
-        -webkit-box-sizing: border-box;
-        -moz-box-sizing: border-box;
-        box-sizing: border-box;
-      }
-      img {
-        border: 0;
-        /*removes border when inside 'a' element in IE6/7/8/9 FF3. */
-        -ms-interpolation-mode: bicubic;
-        /* Improves image quality when scaled in IE7. */
-        width: auto;
-        /* IE8 bug. Requires this to work properly with max-width in scaling images. */
-        max-width: 100%;
-        height: auto;
-        display: block;
-      }
-      form {
-        margin: 1.5rem 0;
-      }
-      table {
-        width: 100%;
-        margin-bottom: 20px;
-        border-collapse: collapse;
-      }
-      table,
-      th,
-      td {
-        border-bottom: 1px solid #dddddd;
-      }
-      table th,
-      table td {
-        padding: 10px;
-        text-align: left;
-      }
-      label {
-        display: block;
-      }
-      form:after {
-        content: "";
-        display: table;
-        clear: both;
-      }
-      .form-item {
-        vertical-align: bottom;
-      }
-      select,
-      input,
-      button {
-        border: 1px solid #aaaaaa;
-        border-radius: 2px;
-        padding: 0.375rem 0.75rem;
-        color: #555555;
-        min-height: 2rem;
-        line-height: 1;
-      }
-      form.create-portfolio {
-        padding: 0;
-        display: grid;
-        grid-template-columns: 1fr 1fr 1fr 1fr;
-        grid-gap: 1.5rem;
-      }
-      form.create-portfolio.first {
-        margin: 0;
-      }
-
-      table.portfolio tfoot tr,
-      table.portfolio tfoot td,
-      table.portfolio tfoot th {
-        border: none;
-      }
-      form.create-portfolio input,
-      form.create-portfolio select,
-      form.create-portfolio button {
-        width: 100%;
-        max-width: 100%;
-      }
-      /* Custom */
-
-      body {
-        font-family: Hind, "Helvetica Neue", sans-serif;
-        font-size: 1rem;
-        font-weight: 400;
-        font-style: normal;
-        line-height: 1.38em;
-        text-decoration: none;
-        text-transform: none;
-        letter-spacing: -0.4px;
-        color: #4d4e53;
-      }
-      div#site-logo {
-        max-width: 200px;
-      }
-      .container {
-        padding: 1.5rem;
-      }
-      div#site-title {
-        border-bottom: 0.1875rem solid #3a3a4e;
-        padding: 0.75rem 0;
-        margin: 0.75rem 0 1.5rem;
-      }
-      div#site-title h1 {
-        margin: 0;
-        padding: 0;
-        color: #3a3a4e;
-        font-family: "Playfair Display", serif;
-        font-size: 2rem;
-        font-weight: 700;
-        font-style: normal;
-        line-height: 1.21em;
-        text-decoration: none;
-        text-transform: none;
-        letter-spacing: 0px;
-      }
-      th {
-        border-top: none;
-      }
-      th,
-      td {
-        border-bottom: 1px solid #dddddd;
-      }
-      .portfolio-pct {
-        text-align: right;
-      }
-      .total-portfolio-pct {
-        text-align: right;
-      }
-      th,
-      td {
-        vertical-align: top;
-      }
-      .allocation,
-      .total-allocation {
-        text-align: right;
-      }
-      table.portfolio {
-        font-size: 0.9375rem;
-        border-top: 1px solid #dddddd;
-        border-left: none;
-      }
-      .account-value {
-        text-align: right;
-      }
-      .total-account-value {
-        text-align: right;
-      }
-      table.portfolio th {
-        background: #f7f7f7;
-        vertical-align: middle;
-      }
-      input[type="checkbox"] {
-        margin: 0;
-        line-height: inherit;
-        min-height: inherit;
-      }
-      thead {
-        height: 65px;
-      }
-      table.portfolio tfoot th {
-        vertical-align: top;
-      }
-
-      header#header {
-        float: left;
-        /* width: 75%; */
-      }
-
-      .section {
-        margin-top: 2rem;
-      }
-
-      .section.chart {
-        text-align: center;
-      }
-
-      .chart-wrapper {
-        display: inline-block;
-        width: 40%;
-        margin-bottom: 2rem;
-        /* padding: 0 1.5rem; */
-        /* border: 1px solid;  */
-      }
-
-      main#content {
-        float: none;
-        clear: both;
-      }
-      .chart-canvas {
-        width: 50%;
-      }
-      .pagebreak {
-        page-break-before: always;
-      }
-      .print-only {
-        display: none;
-      }
-
-      #page-disclosures > div {
-        column-count: 2;
-        column-gap: 2rem;
-      }
-
-      #page-disclosures h3:first-child {
-        margin-top: 0;
-      }
-
-      @media print {
-        @page {
-          size: portrait;
-          margin: 1.5rem;
-          print-color-adjust: exact !important;
-          -webkit-print-color-adjust: exact !important; /* Chrome, Safari, Edge */
-          color-adjust: exact !important; /*Firefox*/
-        }
-        .container.container-header {
-          padding: 0;
-        }
-        .container.container-main {
-          padding: 1.5rem 0;
-        }
-        form.create-portfolio,
-        button,
-        .select-row {
-          display: none;
-        }
-        thead {
-          height: 65px;
-        }
-
-        .chart-wrapper {
-          /* display: inline-block; */
-          /* width: 50%; */
-          display: inline-block;
-          /* border: 1px solid blue;  */
-          width: 355px;
-        }
-        .chart-canvas {
-          /* border: 1px solid #000; */
-          width: 355px !important;
-          height: 355px !important;
-          /* display: inline-block; */
-        }
-        .print-only.visible {
-          display: block;
-        }
-      }
-    </style>
-  </head>
-  <body>
-    <header class="aos-init aos-animate" data-aos="fade-in" id="header">
-      <div class="container container-header">
-        <div id="site-logo">
-          <a
-            href="https://www.ritholtzwealth.com/portfolio-tool"
-            rel="home"
-            title="Ritholtz Wealth"
-            ><img
-              alt="Logo"
-              class="logo"
-              src="https://uploads-ssl.webflow.com/65130841b917bfe736963ca4/651ade1d48430e2eec665858_logo_horizontal_blue.svg"
-          /></a>
-        </div>
-        <div id="site-title">
-          <h1>Proposed Investment Portfolio for ...</h1>
-        </div>
-        <div id="site-header">
-          Based on our assessment of your financial circumstances, goals, risk
-          profile, and time horizon, please see your proposed investment
-          portfolio. This snapshot includes your overall asset allocation along
-          with a breakdown by strategy and the location of your assets.
-        </div>
-      </div>
-    </header>
-    <main id="content">
-      <div class="container container-main">
-        <form class="create-portfolio first">
-          <div class="form-item">
-            <label for="client-name">Client Name:</label>
-            <input type="text" id="client-name" />
-          </div>
-        </form>
-        <form class="create-portfolio">
-          <div class="form-item">
-            <label for="account-name">Account Name:</label>
-            <input type="text" id="account-name" />
-            <!-- <select name="account-type" id="account-type">
-                <option value="Investment Account">Investment Account</option>
-                <option value="Retirement Account">Retirement Account</option>
-                <option value="Trust Account">Trust Account</option>
-                <option value="Education Savings Account">Education Savings Account</option>
-                <option value="Custodial Account">Custodial Account</option>
-              </select> -->
-          </div>
-          <div class="form-item">
-            <label for="strategy">Strategy:</label>
-            <select id="strategy" name="strategy">
-              <option value="Viking">Viking</option>
-              <option value="Mariner">Mariner</option>
-              <option value="Explorer">Explorer</option>
-              <option value="Pioneer">Pioneer</option>
-              <option value="Voyager">Voyager</option>
-              <option value="All Equity">All Equity</option>
-              <option value="Canvas Viking">Canvas Viking</option>
-              <option value="Canvas Mariner">Canvas Mariner</option>
-              <option value="Canvas Explorer">Canvas Explorer</option>
-              <option value="Canvas Pioneer">Canvas Pioneer</option>
-              <option value="Canvas Voyager">Canvas Voyager</option>
-              <option value="Canvas All Equity">Canvas All Equity</option>
-              <option value="Canvas Defensive Stability Viking">
-                Canvas Defensive Stability Viking
-              </option>
-              <option value="Canvas Defensive Stability Mariner">
-                Canvas Defensive Stability Mariner
-              </option>
-              <option value="Canvas Defensive Stability Explorer">
-                Canvas Defensive Stability Explorer
-              </option>
-              <option value="Canvas Defensive Stability Pioneer">
-                Canvas Defensive Stability Pioneer
-              </option>
-              <option value="Canvas Defensive Stability Voyager">
-                Canvas Defensive Stability Voyager
-              </option>
-              <option value="Canvas Defensive Stability All Equity">
-                Canvas Defensive Stability All Equity
-              </option>
-              <option value="Goaltender">Goaltender</option>
-              <option value="RTREE - Crypto Index">RTREE - Crypto Index</option>
-              <option value="HALO - Structured Notes">
-                HALO - Structured Notes
-              </option>
-              <option value="Compound Capital Venture">
-                Compound Capital Venture
-              </option>
-              <option value="Gurtin">Gurtin</option>
-            </select>
-          </div>
-          <div class="form-item">
-            <label for="account-value">Account Value:</label>
-            <input id="account-value" placeholder="Account Value" type="text" />
-          </div>
-          <div class="form-item">
-            <label for="account-value">Add Row:</label>
-            <input class="add-row" type="button" value="Add Row" />
-          </div>
-        </form>
-        <table class="portfolio">
-          <thead>
-            <tr>
-              <th class="select-row">Select</th>
-              <th class="account-type">Account Name</th>
-              <th class="strategy">Strategy</th>
-              <th class="account-value">Account Value</th>
-              <th class="allocation">Allocation</th>
-              <th class="portfolio-pct">% of Portfolio<br /></th>
-            </tr>
-          </thead>
-          <tbody>
-            <!-- <tr>
-              <td class="select-row"><input type="checkbox" name="record" /></td>
-              <td class="account-type"></td>
-              <td class="strategy"></td>
-              <td class="account-value">$<span></span></td>
-              <td class="allocation">
-                <div class="allocation-stocks">&nbsp;</div>
-                <div class="allocation-bonds">&nbsp;</div>
-              </td>
-              <td class="portfolio-pct"></td>
-            </tr> -->
-          </tbody>
-          <tfoot>
-            <tr>
-              <!-- <th class="total-select-row"></th>
-            <th class="total-account-type"></th>
-            <th class="total-strategy"></th> -->
-              <th class="select-row"></th>
-              <th class="total-account-portfolio">Total Portfolio</th>
-              <th class="blank"></th>
-              <th class="total-account-value"></th>
-              <th class="total-allocation"></th>
-              <th class="total-portfolio-pct"></th>
-            </tr>
-          </tfoot>
-        </table>
-        <button class="delete-row" type="button">Delete Row</button>
-        <button class="delete-all" type="button">Delete All</button>
-        <button id="print">Print Portfolio</button>
-
-        <div class="section chart">
-          <div class="chart-wrapper">
-            <canvas
-              class="chart-canvas"
-              style="
-                display: none;
-                box-sizing: border-box;
-                height: 600px;
-                width: 600px;
-              "
-              id="StockBondsChart"
-              width="1200"
-              height="1200"
-            ></canvas>
-          </div>
-          <div
-            class="chart-wrapper"
-            id="StrategiesChartWrapper"
-            style="display: none"
-          >
-            <canvas
-              class="chart-canvas"
-              style="
-                display: block;
-                box-sizing: border-box;
-                height: 0px;
-                width: 0px;
-              "
-              id="StrategiesChart"
-              width="0"
-              height="0"
-            ></canvas>
-          </div>
-          <div
-            class="chart-wrapper"
-            id="AssetsChartWrapper"
-            style="display: none"
-          >
-            <canvas
-              class="chart-canvas"
-              style="
-                display: block;
-                box-sizing: border-box;
-                height: 0px;
-                width: 0px;
-              "
-              id="AssetsChart"
-              width="0"
-              height="0"
-            ></canvas>
-          </div>
-        </div>
-
-        <div class="pagebreak"></div>
-
-        <div class="print-only visible pagebreak" id="page-disclosures">
-          <h2>Disclosures</h2>
-          <div>
-            <h3>Ritholtz Wealth Management</h3>
-            <p>
-              Ritholtz Wealth Management is a Registered Investment Adviser.
-              Advisory services are only offered to clients or prospective
-              clients where RWM and its representatives are properly licensed or
-              exempt from licensure. This proposal is solely for informational
-              purposes. Investing involves risk and possible loss of principal
-              capital. Asset allocation models and diversification do not
-              promise any level of performance or guarantee against loss of
-              principal. No advice may be rendered by Ritholtz Wealth Management
-              unless a client service agreement is in place. Please contact us
-              at your earliest convenience with any questions regarding the
-              content of this presentation and how it may be the right strategy
-              for you.
-            </p>
-
-            <h3>Benchmarks</h3>
-            <p>
-              RWM seeks to select exchange-traded funds or exchange-traded
-              open-end index mutual funds with portfolios that have broad based
-              exposure and look to ensure that the portfolios have a reasonable
-              representation of the global markets. These securities employ an
-              indexing investment approach designed to track the performance of
-              certain market indexes. The Benchmark RWM uses is the Morgan
-              Stanley Capital International All Country World Index (MSCI ACWI).
-            </p>
-
-            <p>
-              The MSCI World Index captures large and mid- cap representation
-              across 23 Developed Markets countries, including Australia,
-              Austria, Belgium, Canada, Denmark, Finland, France, Germany, Hong
-              Kong, Ireland, Israel, Italy, Japan, Netherlands, New Zealand,
-              Norway, Portugal, Singapore, Spain, Sweden, Switzerland, the UK
-              and the US. With 1,644 constituents, the index covers
-              approximately 85% of the free float-adjusted market capitalization
-              in each country.
-            </p>
-
-            <p>
-              An index is a hypothetical portfolio of securities representing a
-              particular market or a segment of it used as indicator of the
-              change in the securities market. Indices are not available for
-              direct investment; therefore, their performance does not reflect
-              the expenses associated with the management of an actual
-              portfolio.
-            </p>
-
-            <h3>Allocations</h3>
-            The target asset allocations in the Allocations section may vary
-            from actual allocations. Target allocations are reviewed at least
-            annually and may be revised. While diversification through an asset
-            allocation strategy is a useful technique that can help to manage
-            overall portfolio risk and volatility, there is no certainty or
-            assurance that a diversified portfolio will enhance overall return
-            or outperform one that is not diversified. Diversification does not
-            ensure a profit or protect against loss in declining markets.
-            allocation. There is no guarantee that the target asset allocation
-            is appropriate for your situation or will be an effective means of
-            achieving your financial goals. There is no guarantee that a
-            particular return or dollar amount will be achieved.
-
-            <h3>Historical Performance</h3>
-            Ritholtz Wealth Management seeks to select exchange-traded funds or
-            exchange-traded open-end index mutual funds with portfolios that
-            have broad based exposure and look to ensure that the portfolios
-            have a reasonable representation of the global markets. These
-            securities employ an indexing investment approach designed to track
-            the performance of certain market indexes. Performance of actual
-            portfolio investments will be reduced by fees including management
-            fees, custodial fees and any fees associated with the underlying
-            security.
-
-            <p>
-              The information provided in the Risk Profile represents
-              hypothetical performance of the indices tracked by the underlying
-              portfolio investments and does not guarantee future results.
-              Indices are not available for direct investment; therefore, their
-              performance does not reflect the expenses associated with the
-              management of an actual portfolio. “Back-testing” is the
-              application of a quantitative model to historical market data to
-              generate hypothetical performance during a prior period. The
-              information provided is back-tested performance, was compiled
-              after the end of the period described and does not represent
-              decisions made by RWM during the period described.
-            </p>
-
-            <p>
-              Historical return assumptions for stock market returns are based
-              on the stated earnings yield of the underlying index for the
-              exchange-traded funds. For bond market returns, the most current
-              30-Day SEC yield for the selected bond market exchange-traded
-              index funds is used. For U.S. cash reserve returns, the most
-              current Federal Funds rate is used. Past performance is no
-              guarantee of future returns.
-            </p>
-
-            <h3>Risks in Investing</h3>
-            <p>
-              Investing involves risk and possible loss of principal capital.
-              Investors should consider an investment's investment objective,
-              risks, charges, and expenses carefully before investing.
-            </p>
-
-            <p>
-              Investing in fixed income securities involves interest rate risk,
-              credit risk, and inflation risk. Interest rate risk is the
-              possibility that bond prices will decrease because of an interest
-              rate increase. When interest rates rise, bond prices and the
-              values of fixed income securities fall. When interest rates fall,
-              bond prices and the values of fixed income securities rise. Credit
-              risk is the risk that a company will not be able to pay its debts,
-              including the interest on its bonds. Inflation risk is the
-              possibility that the interest paid on an investment in bonds will
-              be lower than the inflation rate, decreasing purchasing power.
-            </p>
-
-            <p>
-              Cash alternatives typically include money market securities and
-              U.S. treasury bills. Investing in such cash alternatives involves
-              inflation risk. In addition, investments in money market
-              securities may involve credit risk and a risk of principal loss.
-              Because money market securities are neither insured nor guaranteed
-              by the Federal Deposit Insurance Corporation or any other
-              government agency, there is no guarantee the value of your
-              investment will be maintained at $1.00 per share. U.S. Treasury
-              bills are subject to market risk if sold prior to maturity. Market
-              risk is the possibility that the value, when sold, might be less
-              than the purchase price.
-            </p>
-
-            <p>
-              Investing in stock securities involves volatility risk, market
-              risk, business risk, and industry risk. The prices of most stocks
-              fluctuate. Volatility risk is the chance that the value of a stock
-              will fall. Market risk is chance that the prices of all stocks
-              will fall due to conditions in the economic environment. Business
-              risk is the chance that a specific company´s stock will fall
-              because of issues affecting it. Industry risk is the chance that a
-              set of factors particular to an industry group will adversely
-              affect stock prices within the industry.
-            </p>
-
-            <p>
-              International investing involves additional risks including, but
-              not limited to, changes in currency exchange rates, differences in
-              accounting and taxation policies, and political or economic
-              instabilities that can increase or decrease returns.
-            </p>
-
-            <p>
-              In the case of mutual funds and ETFs (Exchange Traded Funds) a
-              prospectus is available which contains this and other important
-              information and should be read carefully before investing. ETFs
-              are subject to market fluctuation and the risks of their
-              underlying investments. ETFs are subject to management fees and
-              other expenses. Unlike mutual funds, ETF shares are bought and
-              sold at market price, which may be higher or lower than their NAV,
-              and are not individually redeemed from the fund.
-            </p>
-          </div>
-        </div>
-
-        <div class="print-only pagebreak additional-page" id="page-Viking">
-          <img
-            src="https://ritholtzwealth.com/wp-content/uploads/2022/06/template-viking.jpg"
-          />
-        </div>
-        <div class="print-only pagebreak additional-page" id="page-Mariner">
-          <img
-            src="https://ritholtzwealth.com/wp-content/uploads/2022/06/template-mariner.jpg"
-          />
-        </div>
-        <div class="print-only pagebreak additional-page" id="page-Explorer">
-          <img
-            src="https://ritholtzwealth.com/wp-content/uploads/2022/06/template-explorer.jpg"
-          />
-        </div>
-        <div class="print-only pagebreak additional-page" id="page-Pioneer">
-          <img
-            src="https://ritholtzwealth.com/wp-content/uploads/2022/06/template-pioneer.jpg"
-          />
-        </div>
-        <div class="print-only pagebreak additional-page" id="page-Voyager">
-          <img
-            src="https://ritholtzwealth.com/wp-content/uploads/2022/06/template-voyager.jpg"
-          />
-        </div>
-        <div class="print-only pagebreak additional-page" id="page-Goaltender">
-          <img
-            src="https://ritholtzwealth.com/wp-content/uploads/2022/06/template-goaltender.jpg"
-          />
-        </div>
-      </div>
-    </main>
-    <!-- Linking jQuery -->
-    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
-
-    <!-- Linking Chart.js -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script>
        class applicationData {
   constructor() {
     this.items = {};
@@ -1184,8 +511,8 @@
           caption: "Goaltender",
           group: "Goaltender",
           allocation: {
-            alternatives: {
-              desc: "100% Alternatives",
+            tactical: {
+              desc: "100% Tactical",
               pct: 1.0
             }
           },
@@ -1196,8 +523,8 @@
           caption: "RTREE - Crypto Index",
           group: "RTREE - Crypto Index",
           allocation: {
-            alternatives: {
-              desc: "100% Alternatives",
+            tactical: {
+              desc: "100% Tactical",
               pct: 1.0
             }
           },
@@ -1208,8 +535,8 @@
           caption: "HALO - Structured Notes",
           group: "HALO - Structured Notes",
           allocation: {
-            alternatives: {
-              desc: "100% Alternatives",
+            tactical: {
+              desc: "100% Tactical",
               pct: 1.0
             }
           },
@@ -1220,8 +547,8 @@
           caption: "Compound Capital Venture",
           group: "Compound Capital Venture",
           allocation: {
-            alternatives: {
-              desc: "100% Alternatives",
+            tactical: {
+              desc: "100% Tactical",
               pct: 1.0
             }
           },
@@ -1421,7 +748,7 @@ initStrategyOptions();
 // Global chart objects.
 const StockBondsChart = createChart(
   document.getElementById("StockBondsChart"),
-  ["Stocks", "Bonds", "Alternatives"],
+  ["Stocks", "Bonds", "Tactical"],
   [0, 0, 0]
 );
 const StrategiesChart = createChart(
@@ -1517,15 +844,15 @@ function addRow() {
 
     var alStocks = 0,
       alBonds = 0,
-      alAlternatives = 0;
+      alTactical = 0;
     if (al.stocks !== undefined) {
       alStocks = al.stocks.pct * accVal;
     }
     if (al.bonds !== undefined) {
       alBonds = al.bonds.pct * accVal;
     }
-    if (al.alternatives !== undefined) {
-      alAlternatives = al.alternatives.pct * accVal;
+    if (al.tactical !== undefined) {
+      alTactical = al.tactical.pct * accVal;
     }
 
     // Update the appData
@@ -1551,14 +878,14 @@ function addRow() {
         " ($" +
         numberWithCommas(alBonds) +
         ")</div>";
-    } else if (alAlternatives > 0) {
+    } else if (alTactical > 0) {
       markupAlloc =
-        "<div class='allocation-alternatives' data-val=\"" +
-        alAlternatives +
+        "<div class='allocation-tactical' data-val=\"" +
+        alTactical +
         '" >' +
-        al.alternatives.desc +
+        al.tactical.desc +
         " ($" +
-        numberWithCommas(alAlternatives) +
+        numberWithCommas(alTactical) +
         ")</div>";
     } else {
       markupAlloc =
@@ -1646,20 +973,20 @@ function calculate() {
   // Get the total allocations.
   var sumStocks = 0;
   var sumBonds = 0;
-  var sumAlternatives = 0;
+  var sumTactical = 0;
   $(".allocation-stocks").each(function () {
     sumStocks += getNumVal($(this).attr("data-val"));
   });
   $(".allocation-bonds").each(function () {
     sumBonds += getNumVal($(this).attr("data-val"));
   });
-  $(".allocation-alternatives").each(function () {
-    sumAlternatives += getNumVal($(this).attr("data-val"));
+  $(".allocation-tactical").each(function () {
+    sumTactical += getNumVal($(this).attr("data-val"));
   });
 
   var pctStocks = ((sumStocks / sum) * 100).toFixed(1) + "%";
   var pctBonds = ((sumBonds / sum) * 100).toFixed(1) + "%";
-  var pctAlternatives = ((sumAlternatives / sum) * 100).toFixed(1) + "%";
+  var pctTactical = ((sumTactical / sum) * 100).toFixed(1) + "%";
 
   // Set the summary values.
   if (sum != 0) {
@@ -1682,12 +1009,12 @@ function calculate() {
         numberWithCommas(sumBonds) +
         ")</div>";
     }
-    if (sumAlternatives) {
+    if (sumTactical) {
       alloc +=
         "<div>" +
-        pctAlternatives +
-        " Alternatives ($" +
-        numberWithCommas(sumAlternatives) +
+        pctTactical +
+        " Tactical ($" +
+        numberWithCommas(sumTactical) +
         ")</div>";
     }
     $(".total-allocation").html(alloc);
@@ -1699,14 +1026,14 @@ function calculate() {
   }
 
   // Stocks / Bonds / Goaltender chart.
-  updateChart(StockBondsChart, [sumStocks, sumBonds, sumAlternatives]);
+  updateChart(StockBondsChart, [sumStocks, sumBonds, sumTactical]);
   updateChart(
     StockBondsChart,
-    [sumStocks, sumBonds, sumAlternatives],
+    [sumStocks, sumBonds, sumTactical],
     [
       "Stocks (" + pctStocks + ")",
       "Bonds (" + pctBonds + ")",
-      "Alternatives (" + pctAlternatives + ")"
+      "Tactical (" + pctTactical + ")"
     ]
   );
 
@@ -1861,7 +1188,3 @@ function numberWithCommas(number, numDigits) {
   parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",");
   return parts.join(".");
 }
-
-    </script>
-  </body>
-</html>
